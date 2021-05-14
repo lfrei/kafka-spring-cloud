@@ -1,5 +1,6 @@
 package com.redbeard.stream;
 
+import com.redbeard.stream.domain.Product;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,14 @@ public class ProductController {
     @Autowired
     private InteractiveQueryService queryService;
 
-    ReadOnlyKeyValueStore<Object, Object> keyValueStore;
+    private ReadOnlyKeyValueStore<String, Product> keyValueStore;
 
     @GetMapping("/product/{id}")
-    String getProduct(@PathVariable String id) {
+    Product getProduct(@PathVariable String id) {
         if (keyValueStore == null) {
             keyValueStore = queryService.getQueryableStore(STORE_NAME, QueryableStoreTypes.keyValueStore());
         }
 
-        return String.valueOf(keyValueStore.get(id));
+        return keyValueStore.get(id);
     }
 }

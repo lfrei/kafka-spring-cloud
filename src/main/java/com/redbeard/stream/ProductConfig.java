@@ -10,6 +10,8 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.function.Consumer;
 
@@ -27,9 +29,12 @@ public class ProductConfig {
     @Bean
     public Consumer<KStream<String, Product>> process() {
         return input -> input
-                .map((key, value) -> new KeyValue<>(value.getId(), value.getName()))
-                .toTable(Materialized.<String, String, KeyValueStore<Bytes, byte[]>>as(STORE_NAME)
+                .map((key, value) -> new KeyValue<>(value.getId(), value))
+                .toTable(Materialized.<String, Product, KeyValueStore<Bytes, byte[]>>as(STORE_NAME)
                         .withKeySerde(Serdes.String())
-                        .withValueSerde(Serdes.String()));
+                        .withValueSerde(Serdes.serdeFrom(
+                                new JsonSerializer<>(),
+                                new JsonDeserializer<>(Product.class)
+                                        .trustedPackages("*"))));
     }
 }
