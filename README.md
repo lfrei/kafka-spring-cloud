@@ -13,3 +13,10 @@ Get products with:
 ```
 http://localhost:8080/product/[id]
 ```
+
+## Get Topology
+The Topology can be shown using the following endpoint:
+
+```
+http://localhost:8080/actuator/kafkastreamstopology/showcase
+```
